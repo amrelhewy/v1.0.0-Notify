@@ -141,7 +141,7 @@ let elarabygroup = async (link) => {
   else available = "In stock";
 
   await browser.close();
-
+console.log(name,imgSrc,price);
   return {
     name: name,
     ImgSrc: imgSrc,

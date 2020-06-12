@@ -3,15 +3,8 @@ const MetalTrack = require("../model/MetalTrack");
 const metal = require("../websites/PreciousMetals.js");
 const nodemailer = require("nodemailer");
 const smtpTransport = require("nodemailer-smtp-transport");
-const transporter = nodemailer.createTransport(
-  smtpTransport({
-    service: "SendGrid",
-    auth: {
-      user: process.env.sendgrid_id,
-      pass: process.env.sendgrid_pw
-    }
-  })
-);
+
+const transporter = nodemailer.createTransport(  smtpTransport({    service: "SendGrid",    auth: {      user: process.env.sendgrid_id,      pass: process.env.sendgrid_pw    }  })
 async function MetalPriceTrack(newMetalTrack, info, reqPrice) {
   return new Job(
     "*/2 * * * *",
@@ -19,18 +12,19 @@ async function MetalPriceTrack(newMetalTrack, info, reqPrice) {
       const dis = this;
 
       //starting a new cron job (scheduled task)... something to keep track of the products price
-      const pro = await MetalTrack.findOne(newMetalTrack);
+      const pro = await MetalTrack.findOne({
+        user_id: newMetalTrack.user_id,
+        metal_type: newMetalTrack.metal_type,
+        weight: newMetalTrack.weight,
+        currency: newMetalTrack.currency,
+      });
       if (pro) {
         //getting old price from db.
         //scrape the link again to find the current price..
-  let _Mtl
-        if(pro.metal_type=='Gold'){_Mtl='XAU'}
-        else{_Mtl=='XAG'}
-        metal(pro.currency,pro.weight,_Mtl)
+        metal(pro.currency,pro.weight,pro.metal_type)
           .then((values) => {
-            giveresults(values).then((res) =>
-{               console.log(res)
-              console.log(`Checked MetalPrice for today for user ${pro.user_id}`)}
+            giveresults(values).then(() =>
+              console.log(`Checked MetalPrice for today for user ${pro.user_id}`)
             );
           })
           .catch(() => {});
@@ -42,22 +36,24 @@ async function MetalPriceTrack(newMetalTrack, info, reqPrice) {
             reqPrice
               ? (requiredPrice = reqPrice)
               : (requiredPrice = pro.current_price);
-            if (currentPrice <requiredPrice) {
+            if (currentPrice < requiredPrice) {
               let email = transporter
                 .sendMail({
                   from: "notifyapp96@gmail.com", // sender address
                   to: info.userEmail, // list of receivers
                   subject: `The ${pro.metal_type} price you were tracking in ${pro.currency} has dropped!`, // Subject line
                   html: `<h2>This Price has dropped to ${currentPrice} ${pro.currency} for 1 ${pro.weight}!! </h2><br>
-                         <p>Tracking this item has stopped automatically, if you wish to keep tracking please provide the item details in the app again.</p>
                     `, // html body
                 })
                 .then(() => {
-                 
+                  console.log(`metals email sent to ${info.userEmail}`);
                   dis.stop();
-                  console.log(`metals email sent to ${info.userEmail} and stopped tracking the item automatically`);
-
-                  pro.remove().then(() => {
+                  MetalTrack.deleteOne({
+                    user_id: _id,
+                    metal_type: newMetalTrack.name,
+                    weight: newMetalTrack.weight,
+                    currency: newMetalTrack.currency,
+                  }).then(() => {
                     resolve("done");
                   });
                 })

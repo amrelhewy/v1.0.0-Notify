@@ -35,7 +35,7 @@ router.post("/register", async (req, res) => {
   let ExistingUser = await User.findOne({ email: user.email });
   if (ExistingUser) return res.status(400).send("User already exists");
   const token = jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: "3m" });
-  let link = `<a href="http://localhost:5000/account/register/${token}">Confirm</a>`;
+  let link = `<a href="http://notifyapp.tk/account/register/${token}">Confirm</a>`;
   let info = await transporter.sendMail({
     from: "notifyapp96@gmail.com", // sender address
     to: user.email, // list of receivers
@@ -70,7 +70,7 @@ router.get("/register/:token", async (req, res) => {
       gender: validate.gender
     });
     await newUser.save();
-    res.redirect(`http://localhost:8080/`);
+    res.redirect(`http://notifyapp.tk`);
   } catch (err) {
     res.send(`<h4>This link has expired</h4>`);
   }
@@ -87,7 +87,7 @@ router.post("/login", async (req, res) => {
   );
   if (!comparePasswords) return res.status(401).send(`Incorrect Password`);
   const token = jwt.sign({ id: ExistingUser._id }, process.env.TOKEN_SECRET, {
-    expiresIn: "1h"
+    expiresIn: "5h"
   });
   res
     .status(200)
@@ -117,7 +117,7 @@ router.put("/change-pw", async (req, res) => {
   const token = jwt.sign({ email: email }, process.env.TOKEN_SECRET, {
     expiresIn: "3m"
   });
-  let link = `<a href="http://localhost:5000/account/change-pw/${token}">Change Password</a>`;
+  let link = `<a href="http://notifyapp.tk/account/change-pw/${token}">Change Password</a>`;
   let info = await transporter.sendMail({
     from: "notifyapp96@gmail.com", // sender address
     to: email, // list of receivers
@@ -156,7 +156,7 @@ router.post(
         { email: email },
         { $set: { password: hashedPassword } }
       );
-      res.redirect("http://localhost:8080/");
+      res.redirect("http://notifyapp.tk");
     } catch (err) {
       res.render("resetpw", {
         error:

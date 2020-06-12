@@ -1,6 +1,17 @@
 const Job = require("cron").CronJob;
 const psl = require("psl");
 const messages=require('../model/messages');
+const nodemailer = require("nodemailer");
+const smtpTransport = require("nodemailer-smtp-transport");
+const transporter = nodemailer.createTransport(
+  smtpTransport({
+    service: "SendGrid",
+    auth: {
+      user: process.env.sendgrid_id,
+      pass: process.env.sendgrid_pw
+    }
+  })
+);
 const ProductTrack = require("../model/ProductTrack");
 const {
   ae,
