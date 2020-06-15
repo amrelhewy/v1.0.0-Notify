@@ -3,6 +3,7 @@ const psl = require("psl");
 const messages=require('../model/messages');
 const nodemailer = require("nodemailer");
 const smtpTransport = require("nodemailer-smtp-transport");
+const SMS=require('../twilio')
 const transporter = nodemailer.createTransport(
   smtpTransport({
     service: "SendGrid",
@@ -41,17 +42,14 @@ const {
   gcwatches,
   iwatchstores,
 } = require("../websites/jewlery");
-async function AnyPriceTrack(newProductTrack, info, res, reqPrice) {
+async function AnyPriceTrack(newProductTrack, info, req, reqPrice) {
   return new Job(
     "*/2 * * * *",
     async function () {
       const dis = this;
 
       //starting a new cron job (scheduled task)... something to keep track of the products price
-      const pro= await ProductTrack.findOne({
-        user_id: newProductTrack.user_id,
-        product_link: newProductTrack.product_link,
-      });
+      const pro= await ProductTrack.findOne(newProductTrack);
       if (pro) {
         //getting old price from db.
         //scrape the link again to find the current price..
@@ -68,7 +66,8 @@ async function AnyPriceTrack(newProductTrack, info, res, reqPrice) {
             reqPrice
               ? (requiredPrice = reqPrice)
               : (requiredPrice = pro.product_price);
-            if (currentPrice < requiredPrice) {
+            if (currentPrice < 5000) {
+              SMS(`DISCOUNT ON ${info.name},This Product has dropped to ${currentPrice} ${info.currency}!! `)
               let email = transporter
                 .sendMail({
                   from: "notifyapp96@gmail.com", // sender address
@@ -78,28 +77,17 @@ async function AnyPriceTrack(newProductTrack, info, res, reqPrice) {
                   To Purchase visit ${link}`, // html body
                 })
                 .then(async () => {
-                  await new messages({
-                    userEmail:info.userEmail,
-                    message:`${info.name} has Dropped to ${currentPrice} ${info.currency} But failed to send an email to ${info.userEmail}`
-                  }).save();
-                  await new messages({
-                    userEmail:info.userEmail,
-                    message:`Automatically stopped tracking ${info.name}`
-                  }).save();
+               
                   console.log(`email sent to ${info.userEmail}`);
                   dis.stop();
-                  ProductTrack.deleteOne({
-                    user_id: _id,
-                    product_link: info.link,
-                  }).then(() => {
+                  pro.remove().then(() => {
+                    req.io.sockets.connected[info.socketid].emit("removeItem", newProductTrack);
+                    
                     resolve("done");
                   });
                 })
                 .catch(async () => {
-                 await new messages({
-                  userEmail:info.userEmail,
-                    message:`${info.name} has Dropped to ${currentPrice} ${info.currency} But failed to send an email to ${info.userEmail}`
-                  }).save();
+               
                   reject(new Error("failed to send email"));
                 });
             } else {
@@ -110,10 +98,7 @@ async function AnyPriceTrack(newProductTrack, info, res, reqPrice) {
       }
       else
       {
-        await new messages({
-          userEmail:info.userEmail,
-          message:`Stopped tracking ${info.name}`
-        }).save();
+      
         dis.stop();
         console.log(`stopped cronjob automatically on ${info.userEmail} for product ${info.name}`)
       }

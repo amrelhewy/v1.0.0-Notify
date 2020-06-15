@@ -121,12 +121,12 @@ router.post("/schedule", async (req, res) => {
     product_image: info.image,
   });
   await newProductTrack.save();
-
+  req.io.emit('newItem')
   res.sendStatus(200);
   if (info.userRequirement == 0) {
-    (await scheduler(newProductTrack, info, res)).start();
+    (await scheduler(newProductTrack, info, req)).start();
   } else {
-    (await scheduler(newProductTrack, info, res, info.requestedPrice)).start();
+    (await scheduler(newProductTrack, info, req, info.requestedPrice)).start();
   }
 });
 
@@ -149,13 +149,13 @@ router.post("/schedule-currency", async (req, res) => {
     current_price: info.price,
   });
   await newCurrencyTrack.save();
-
+  req.io.emit('newItem')
   res.sendStatus(200);
   if (info.userRequirement == 0) {
-    (await CurrencyScheduler(newCurrencyTrack, info)).start();
+    (await CurrencyScheduler(newCurrencyTrack, info,req)).start();
   } else {
     (
-      await CurrencyScheduler(newCurrencyTrack, info, info.requestedPrice)
+      await CurrencyScheduler(newCurrencyTrack, info,req, info.requestedPrice)
     ).start();
   }
 });
@@ -178,11 +178,12 @@ router.post("/schedule-metals", async (req, res) => {
     metal_type: info.name,
   });
   await newMetalTrack.save();
+  req.io.emit('newItem')
   res.sendStatus(200);
   if (info.userRequirement == 0) {
-    (await MetalsScheduler(newMetalTrack, info)).start();
+    (await MetalsScheduler(newMetalTrack,req, info)).start();
   } else {
-    (await MetalsScheduler(newMetalTrack, info, info.requestedPrice)).start();
+    (await MetalsScheduler(newMetalTrack, info,req, info.requestedPrice)).start();
   }
 });
 router.get("/getall/:email", async (req, res) => {

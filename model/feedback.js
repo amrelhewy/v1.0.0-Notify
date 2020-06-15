@@ -12,6 +12,9 @@ userName:{
 feedback:{
     required:true,
     type:String
+},
+rating:{
+    type:Number
 }
 });
 

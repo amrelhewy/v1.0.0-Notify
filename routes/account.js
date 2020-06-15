@@ -70,6 +70,7 @@ router.get("/register/:token", async (req, res) => {
       gender: validate.gender
     });
     await newUser.save();
+    req.io.emit('newUser')
     res.redirect(`http://notifyapp.tk`);
   } catch (err) {
     res.send(`<h4>This link has expired</h4>`);

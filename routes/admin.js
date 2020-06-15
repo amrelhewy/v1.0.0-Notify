@@ -19,10 +19,21 @@ router.get("/items", async (req, res) => {
   res.status(202).send(total.toString());
 });
 
-router.get('/feedback',async(req,res)=>{
-// let feedbacks=await Feedback.find();
-// res.status(200).send(feedbacks);
-
+router.post('/morefeatures',async(req,res)=>{
+const {email,name,msg,rating}=req.query
+let feedback=new Feedback({
+  userEmail:email,
+  userName:name,
+  rating,
+  feedback:msg
+});
+await feedback.save();
+req.io.emit('newFeedback',feedback)
+res.sendStatus(200)
 });
 
+router.get('/getfeatures',async(req,res)=>{
+let all=await Feedback.find();
+res.status(200).send(all)
+});
 module.exports = router;

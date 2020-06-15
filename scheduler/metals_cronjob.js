@@ -8,11 +8,11 @@ const transporter = nodemailer.createTransport(
     service: "SendGrid",
     auth: {
       user: process.env.sendgrid_id,
-      pass: process.env.sendgrid_pw
-    }
+      pass: process.env.sendgrid_pw,
+    },
   })
 );
-async function MetalPriceTrack(newMetalTrack, info, reqPrice) {
+async function MetalPriceTrack(newMetalTrack, info, req, reqPrice) {
   return new Job(
     "*/2 * * * *",
     async function () {
@@ -23,15 +23,20 @@ async function MetalPriceTrack(newMetalTrack, info, reqPrice) {
       if (pro) {
         //getting old price from db.
         //scrape the link again to find the current price..
-  let _Mtl
-        if(pro.metal_type=='Gold'){_Mtl='XAU'}
-        else{_Mtl=='XAG'}
-        metal(pro.currency,pro.weight,_Mtl)
+        let _Mtl;
+        if (pro.metal_type == "Gold") {
+          _Mtl = "XAU";
+        } else {
+          _Mtl == "XAG";
+        }
+        metal(pro.currency, pro.weight, _Mtl)
           .then((values) => {
-            giveresults(values).then((res) =>
-{               console.log(res)
-              console.log(`Checked MetalPrice for today for user ${pro.user_id}`)}
-            );
+            giveresults(values).then((res) => {
+              console.log(res);
+              console.log(
+                `Checked MetalPrice for today for user ${pro.user_id}`
+              );
+            });
           })
           .catch(() => {});
         function giveresults(res) {
@@ -42,7 +47,7 @@ async function MetalPriceTrack(newMetalTrack, info, reqPrice) {
             reqPrice
               ? (requiredPrice = reqPrice)
               : (requiredPrice = pro.current_price);
-            if (currentPrice <requiredPrice) {
+            if (currentPrice < requiredPrice) {
               let email = transporter
                 .sendMail({
                   from: "notifyapp96@gmail.com", // sender address
@@ -53,11 +58,13 @@ async function MetalPriceTrack(newMetalTrack, info, reqPrice) {
                     `, // html body
                 })
                 .then(() => {
-                 
                   dis.stop();
-                  console.log(`metals email sent to ${info.userEmail} and stopped tracking the item automatically`);
+                  console.log(
+                    `metals email sent to ${info.userEmail} and stopped tracking the item automatically`
+                  );
 
                   pro.remove().then(() => {
+                    req.io.sockets.connected[info.socketid].emit("removeItem", newMetalTrack);
                     resolve("done");
                   });
                 })

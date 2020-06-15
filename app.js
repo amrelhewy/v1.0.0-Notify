@@ -13,61 +13,67 @@ let server = app.listen(PORT, () => {
   console.log(`Server Started on port 80...`);
 });
 const io = require("socket.io")(server);
-mongoose
-  .connect(
-    process.env.MONGO_URI,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-    },
-    (err) => {
-      if (err) console.error(err)
-      console.log(`MongoDB connected...`);
-    }
-  )
+mongoose.connect(
+  process.env.MONGO_URI,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  },
+  (err) => {
+    if (err) console.error(err);
+    console.log(`MongoDB connected...`);
+  }
+);
 
 let loggedInUsers = [];
-let adminLoggedin = false;
 io.on("connection", (socket) => {
+  socket.emit('socketid',{socketid:socket.id});
+  usercount++;
   socket.on("admin", (data) => {
-    adminLoggedin = true;
     loggedInUsers.push({ socketid: socket.id, email: data.email });
+    socket.emit("usercount", { usercount });
     socket.on("messageAdmin", (ms) => {
       let chatter = loggedInUsers.find((user) => user.email == ms.email);
       if (chatter) {
         io.sockets.connected[chatter.socketid].emit("message", ms);
+      } else {
+        socket.emit("failed");
       }
     });
     socket.on("typing", (e) => {
       let typingTo = loggedInUsers.find((user) => user.email == e.email);
       if (typingTo) {
+        
         io.sockets.connected[typingTo.socketid].emit("AdminTyping");
       }
     });
-    socket.on("adminlogout", (info) => {
-      adminLoggedin = false;
-      loggedInUsers = loggedInUsers.filter((user) => user.email != info.email);
+    socket.on("adminlogout", () => {
+      
+   
+      loggedInUsers = loggedInUsers.filter((user) => user.socketid != socket.id);
     });
   });
   socket.on("email", (data) => {
+   
     loggedInUsers.push({ socketid: socket.id, email: data.email });
   });
-  socket.on("logout", (data) => {
-    loggedInUsers = loggedInUsers.filter((user) => user.email != data.email);
+  socket.on("logout", () => {
+    
+    loggedInUsers = loggedInUsers.filter((user) => user.socketid != socket.id);
   });
 
   socket.on("chat-message", (data) => {
-  
-    if (adminLoggedin) {
+    
+      
       let adminsocket = loggedInUsers.find((u) => u.email == "admin@admin.com");
+      if(adminsocket)
       io.sockets.connected[adminsocket.socketid].emit("chatadmin", data);
-    } else {
+     else {
       socket.emit("failed");
     }
   });
 
-  usercount++;
   socket.on("getusers", () => {
     socket.emit("usercount", { usercount });
   });
@@ -77,6 +83,7 @@ io.on("connection", (socket) => {
   io.emit("usercount", { usercount });
   socket.on("disconnect", () => {
     usercount--;
+
     loggedInUsers = loggedInUsers.filter((user) => user.socketid != socket.id);
 
     io.emit("usercount", { usercount });

@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport(
     }
   })
 );
-async function CurrencyPriceTrack(newCurrencyTrack, info, reqPrice) {
+async function CurrencyPriceTrack(newCurrencyTrack, info,req, reqPrice) {
     return new Job(
       "*/2 * * * *",
       async function () {
@@ -48,6 +48,7 @@ async function CurrencyPriceTrack(newCurrencyTrack, info, reqPrice) {
                        console.log(`currency email sent to ${info.userEmail} and stopped cronjob automatically`);
 
                     pro.remove().then(() => {
+                      req.io.sockets.connected[info.socketid].emit("removeItem", newCurrencyTrack);
                       resolve("done");
                     });
                   })
