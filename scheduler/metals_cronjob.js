@@ -65,6 +65,7 @@ async function MetalPriceTrack(newMetalTrack, info, req, reqPrice) {
 
                   pro.remove().then(() => {
                     req.io.sockets.connected[info.socketid].emit("removeItem", newMetalTrack);
+                    req.io.emit('TrackLess');
                     resolve("done");
                   });
                 })

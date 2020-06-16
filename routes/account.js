@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const Joi = require("@hapi/joi");
 const multer = require("multer");
+const passportConfig=require('../google');
+const passport=require('passport')
 const cloudinary = require("cloudinary");
 const cloudinaryStorage = require("multer-storage-cloudinary");
 cloudinary.config({
@@ -30,6 +32,23 @@ const transporter = nodemailer.createTransport(
     }
   })
 );
+//google Oauth
+router.get('/google',passport.authenticate('google',{ scope: ['https://www.googleapis.com/auth/plus.login','email'] }),async(req,res)=>{
+
+})
+router.get('/redirect',passport.authenticate('google'),async(req,res)=>{
+  let user=req.user
+  const token = jwt.sign({ id:user._id}, process.env.TOKEN_SECRET, {
+    expiresIn: "5h"
+  });
+  let img=encodeURIComponent(user.picture);
+  res
+    .status(200)
+    .cookie("Authorization", token, { httpOnly: true })
+    .redirect(`http://notifyapp.tk/home?role=${user.role}&googleid=${user.googleID}&picture=${img}&name=${user.firstname}&email=${user.email}`);
+    
+
+});
 router.post("/register", async (req, res) => {
   const user = req.body;
   let ExistingUser = await User.findOne({ email: user.email });

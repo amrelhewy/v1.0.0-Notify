@@ -82,7 +82,7 @@ async function AnyPriceTrack(newProductTrack, info, req, reqPrice) {
                   dis.stop();
                   pro.remove().then(() => {
                     req.io.sockets.connected[info.socketid].emit("removeItem", newProductTrack);
-                    
+                    req.io.emit('TrackLess');
                     resolve("done");
                   });
                 })

@@ -7,15 +7,15 @@ let nike = async (link) => {
   let name, imgSrc, price, curr;
   await page.goto(link, { waitUntil: "networkidle2" });
   try {
-    await page.waitForSelector("h1#pdp_product_title", { visible: true });
+    await page.waitForSelector("h1#pdp_product_title", { visible: true ,timeout:3000});
     name = await page.$eval("h1#pdp_product_title", (prod) => prod.textContent);
   } catch {}
   try {
-    await page.waitForSelector("picture>img");
+    await page.waitForSelector("picture>img",{timeout:3000});
     imgSrc = await page.$eval("picture>img", (img) => img.getAttribute("src"));
   } catch {}
   try {
-    await page.waitForSelector(".headline-5 div", { visible: true });
+    await page.waitForSelector(".headline-5 div", { visible: true,timeout:3000 });
     price = await page.$eval(".headline-5 div", (price) => price.textContent);
     curr = price.replace(/[0-9]|\s/g, "").replace(".", "");
     price = currency(price).value;
@@ -46,14 +46,14 @@ let adidas = async (link) => {
   let ImgSrc;
   let curr;
   try {
-    await page.waitForSelector(".gl-heading.gl-heading--regular");
+    await page.waitForSelector(".gl-heading.gl-heading--regular",{timeout:3000 });
     name = await page.$eval(
       ".gl-heading.gl-heading--regular",
       (name) => name.textContent
     );
   } catch (error) {}
   try {
-    await page.waitForSelector(".gl-price__value");
+    await page.waitForSelector(".gl-price__value",{timeout:3000 });
     pricestring = await page.$eval(
       ".gl-price__value",
       (price) => price.textContent
@@ -61,7 +61,7 @@ let adidas = async (link) => {
     price = currency(pricestring).value;
   } catch (error) {}
   try {
-    await page.waitForSelector(".view___2-z-q img");
+    await page.waitForSelector(".view___2-z-q img",{timeout:3000 });
     ImgTag = await page.$eval(".view___2-z-q img", (img) =>
       img.getAttribute("srcset")
     );
@@ -81,7 +81,6 @@ let adidas = async (link) => {
 };
 let puma = async (link) => {
   const browser = await puppeteer.launch({
-    headless: false,
     defaultViewport: null,
   });
   const page = await browser.newPage();
@@ -92,11 +91,11 @@ let puma = async (link) => {
   let price;
   let ImgSrc;
   try {
-    await page.waitForSelector(".product-name");
+    await page.waitForSelector(".product-name",{timeout:3000 });
     name = await page.$eval(".product-name", (name) => name.textContent);
   } catch (error) {}
   try {
-    await page.waitForSelector(".value");
+    await page.waitForSelector(".value",{timeout:3000 });
     pricestring = await page.$eval(".value", (price) => price.textContent);
     price = currency(pricestring).value;
   } catch (error) {}
@@ -127,20 +126,20 @@ let reebok = (async (link) => {
   let ImgSrc;
   let curr;
   try {
-    await page.waitForSelector('.gl-heading')
+    await page.waitForSelector('.gl-heading',{timeout:3000 })
     name = await page.$eval('.gl-heading', name => name.textContent);
   }
   catch (error) {
   }
   try {
-    await page.waitForSelector('.gl-price__value');
+    await page.waitForSelector('.gl-price__value',{timeout:3000 });
     pricestring = await page.$eval('.gl-price__value', price => price.textContent)
     price=currency(pricestring).value
   }
   catch (error) {
   }
   try {
-    await page.waitForSelector('.view___2-z-q img');
+    await page.waitForSelector('.view___2-z-q img',{timeout:3000 });
     ImgTag= await page.$eval('.view___2-z-q img', img => img.getAttribute('srcset'));
     ImgSplit=ImgTag.split(' ');
     ImgSrc=ImgSplit[0];

@@ -8,14 +8,14 @@ async function mazayastores(link) {
   await page.goto(link, { waitUntil: "networkidle2" });
   //name
   try {
-    await page.waitForSelector(".base", { visible: true });
+    await page.waitForSelector(".base", { visible: true,timeout:3000 });
     var name = await page.$eval(".base", (sp) => sp.textContent);
   } catch (error) {
     console.log("error in name");
   }
   // price
   try {
-    await page.waitForSelector(".price", { visible: true });
+    await page.waitForSelector(".price", { visible: true,timeout:3000 });
     const arr = await page.$eval(".price", (span) =>
       span.textContent.split(" ")
     );
@@ -26,7 +26,7 @@ async function mazayastores(link) {
   }
   //img src
   try {
-    await page.waitForSelector(".fotorama__img", { visible: true });
+    await page.waitForSelector(".fotorama__img", { visible: true,timeout:3000 });
     var imgsrc = await page.$eval(".fotorama__img", (s) => s.src);
   } catch (error) {
     console.log("error during getting img src");
@@ -47,7 +47,7 @@ async function hudabeauty(link){
   await page.goto(link,{waitUntil:"networkidle2"});
   //name
   try{
-      await page.waitForSelector('.product-name',{visible:true})
+      await page.waitForSelector('.product-name',{visible:true,timeout:3000})
       var name=await page.$eval('.product-name',h=>h.textContent);
   }
   catch(error){
@@ -55,7 +55,7 @@ async function hudabeauty(link){
   }
   //price
   try{
-      await page.waitForSelector('.value',{visible:true});
+      await page.waitForSelector('.value',{visible:true,timeout:3000});
       var strprice=await page.$eval('.value',span=>span.textContent);
       var arr=await page.$eval('.value',span=>span.textContent.split(' '));
     
@@ -67,7 +67,7 @@ async function hudabeauty(link){
   }
   //img src
   try{
-      await page.waitForSelector('.mz-figure',{visible:true});
+      await page.waitForSelector('.mz-figure',{visible:true,timeout:3000});
       var imgsrc=await page.$eval('.mz-figure',fig=>fig.firstChild.src);
   
   }
@@ -89,7 +89,7 @@ async function anastasiabeverlyhills(link){
   await page.goto(link,{waitUntil: 'domcontentloaded'});
   //name
   try{
-     await page.waitForSelector('.prod-name-wrap',{visible:true});
+     await page.waitForSelector('.prod-name-wrap',{visible:true,timeout:3000});
       const str=await page.$eval('.prod-name-wrap',sp=>sp.textContent);
       var name = str.replace(/\n|\r|\t/g, "");
    
@@ -100,7 +100,7 @@ async function anastasiabeverlyhills(link){
   }
 // price
   try{
-      await page.waitForSelector('.price-sales',{visible:true});
+      await page.waitForSelector('.price-sales',{visible:true,timeout:3000});
       const strprice=await page.$eval('.price-sales',span=>span.textContent.replace(/\n|\t|\r/gm,''));   
       
       var cur=strprice.replace(/[0-9]|\s/g,'').replace('.','');
@@ -115,7 +115,7 @@ async function anastasiabeverlyhills(link){
   }
 //img src
   try{
-      await page.waitForSelector('.primary-image',{visible:true});
+      await page.waitForSelector('.primary-image',{visible:true,timeout:3000});
       var imgsrc=await page.$eval(".primary-image",img=>img.getAttribute('srcset'));
     
   }
@@ -142,7 +142,7 @@ page.setDefaultNavigationTimeout(0);
   await page.goto(link,{waitUntil:'networkidle2'});
   //name
   try{
-      await page.waitForSelector('.css-euydo4',{visible:true})
+      await page.waitForSelector('.css-euydo4',{visible:true,timeout:3000})
       var name=await page.$eval('.css-euydo4',h=>h.textContent);
   }
   catch(error){
@@ -150,7 +150,7 @@ page.setDefaultNavigationTimeout(0);
   }
   //price
   try{
-      await page.waitForSelector('.css-slwsq8',{visible:true});
+      await page.waitForSelector('.css-slwsq8',{visible:true,timeout:3000});
       const arr=await page.$eval('.css-slwsq8',span=>span.firstChild.textContent)
       var cur=arr.replace(/\s|[0-9]/g,'').replace('.','');
       var price=currency(arr).value;
@@ -160,7 +160,7 @@ page.setDefaultNavigationTimeout(0);
   }
   //img src
   try{
-      await page.waitForSelector('.css-j3e40p',{visible:true});
+      await page.waitForSelector('.css-j3e40p',{visible:true,timeout:3000});
       var imgsrc=await page.$eval('.css-j3e40p',img=>img.src);
   }
   catch(error){

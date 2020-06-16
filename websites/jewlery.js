@@ -10,7 +10,8 @@ let i = async (link) => {
     
     try{
       await page.waitForSelector('.product-single__vendor', {
-        visible: true
+        visible: true,
+        timeout:3000
       });
       name = await page.$eval(
           '.product-single__vendor',
@@ -24,7 +25,7 @@ let i = async (link) => {
     }
    catch{}
   try{
-    await page.waitForSelector('.product-image-main img');
+    await page.waitForSelector('.product-image-main img',{timeout:3000});
     imgSrc = await page.$eval('.product-image-main img', img =>
       img.getAttribute("data-photoswipe-src")
     );
@@ -33,7 +34,8 @@ let i = async (link) => {
   catch{}
   try{
     await page.waitForSelector('.product__price', {
-      visible: true
+      visible: true,
+      timeout:3000
     });
     priceString = await page.$eval(
       '.product__price',
@@ -70,13 +72,13 @@ let azzamwatches = (async (linkUrl) => {
     let ImgSrc;
   
     try {
-      await page.waitForSelector(".product-name", { visible: true });
+      await page.waitForSelector(".product-name", { visible: true,timeout:3000 });
       name = await page.$eval('.product-name', span => span.textContent);
     }
     catch (error) {
     }
     try {
-      await page.waitForSelector(".product-price__price span", { visible: true });
+      await page.waitForSelector(".product-price__price span", { visible: true,timeout:3000 });
       CurrPrice = (await page.$eval('.product-price__price span', span => span.textContent))
       Price = currency(CurrPrice).value;
     }
@@ -84,7 +86,7 @@ let azzamwatches = (async (linkUrl) => {
   
      }
     try {
-      await page.waitForSelector('.product-single__photo-image');
+      await page.waitForSelector('.product-single__photo-image',{timeout:3000});
       ImgSrc = await page.$eval('.product-single__photo-image', img => img.getAttribute('src'));
       ImgSrc=`http:${ImgSrc}`;
     }
@@ -110,13 +112,13 @@ let gcwatches = (async (linkUrl) => {
     let ImgSrc;
     let curr;
     try {
-      await page.waitForSelector(".product-name", { visible: true });
+      await page.waitForSelector(".product-name", { visible: true,timeout:3000 });
       name = await page.$eval('.product-name', span => span.textContent);
     }
     catch (error) {
     }
     try {
-      await page.waitForSelector(".price-sales", { visible: true });
+      await page.waitForSelector(".price-sales", { visible: true,timeout:3000 });
       CurrPrice = (await page.$eval('.price-sales', span => span.textContent))
       Price = currency(CurrPrice).value;
     }
@@ -124,7 +126,7 @@ let gcwatches = (async (linkUrl) => {
   
     }
     try {
-      await page.waitForSelector('.productthumbnail');
+      await page.waitForSelector('.productthumbnail',{timeout:3000});
       ImgSrc = await page.$eval('.productthumbnail', img => img.getAttribute('src'));
     }
     catch (error) {

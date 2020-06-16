@@ -7,7 +7,10 @@ const jwt = require("jsonwebtoken");
 const cookieparser = require("cookie-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const PORT = process.env.PORT || 80; //CHANGE PORT PLZ
+const passport=require('passport')
+app.use(passport.initialize())
+app.use(passport.session())
+const PORT = process.env.PORT || 5000; //CHANGE PORT PLZ
 let usercount = 0;
 let server = app.listen(PORT, () => {
   console.log(`Server Started on port 80...`);

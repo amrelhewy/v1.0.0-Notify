@@ -11,6 +11,7 @@ let fresh = async (link) => {
   try {
     await page.waitForSelector('div[class^="ProductDetails"]> header>h1', {
       visible: true,
+      timeout:3000
     });
     name = await page.$eval(
       'div[class^="ProductDetails"]> header>h1',
@@ -18,7 +19,7 @@ let fresh = async (link) => {
     );
   } catch {}
   try {
-    await page.waitForSelector("#product-image");
+    await page.waitForSelector("#product-image",{timeout:3000});
     imgSrc = await page.$eval("#product-image", (img) =>
       img.getAttribute("href")
     );
@@ -26,6 +27,7 @@ let fresh = async (link) => {
   try {
     await page.waitForSelector('div[class^="ProductDetails"]> div>span', {
       visible: true,
+      timeout:3000
     });
     priceString = await page.$eval(
       'div[class^="ProductDetails"]> div>span',
@@ -59,7 +61,7 @@ let btech = async (link) => {
   await page.goto(link, { waitUntil: "networkidle2" });
 
   try {
-    await page.waitForSelector("h1.product__info__title", { visible: true });
+    await page.waitForSelector("h1.product__info__title", { visible: true,timeout:3000 });
     name = await page.$eval(
       "h1.product__info__title",
       (prod) => prod.textContent
@@ -67,13 +69,13 @@ let btech = async (link) => {
     
   } catch {}
   try {
-    await page.waitForSelector(".fotorama__loaded--img");
+    await page.waitForSelector(".fotorama__loaded--img",{timeout:3000});
     imgSrc = await page.$eval(".fotorama__loaded--img>img", (img) =>
       img.getAttribute("src")
     );
   } catch {}
   try {
-    await page.waitForSelector(".price", { visible: true });
+    await page.waitForSelector(".price", { visible: true,timeout:3000 });
     priceString = await page.$eval(".price", (span) => span.textContent);
     price = currency(priceString).value;
     
@@ -162,11 +164,11 @@ let ikea = async (link) => {
   let curr;
 
   try {
-    await page.waitForSelector(".product-pip__name");
+    await page.waitForSelector(".product-pip__name",{timeout:3000});
     name = await page.$eval(".product-pip__name", (name) => name.textContent);
   } catch (err) {}
   try {
-    await page.waitForSelector(".product-pip__price__value");
+    await page.waitForSelector(".product-pip__price__value",{timeout:3000});
     Pricestring = await page.$eval(
       ".product-pip__price__value",
       (price) => price.textContent
@@ -174,7 +176,7 @@ let ikea = async (link) => {
     price = currency(Pricestring).value;
   } catch (err) {}
   try {
-    await page.waitForSelector(".range-carousel__image");
+    await page.waitForSelector(".range-carousel__image",{timeout:3000});
     ImgSrc = await page.$eval(".range-carousel__image>img", (src) =>
       src.getAttribute("src")
     );
@@ -205,11 +207,11 @@ let inandoutfurniture = async (link) => {
   let curr;
 
   try {
-    await page.waitForSelector(".product-info h1");
+    await page.waitForSelector(".product-info h1",{timeout:3000});
     name = await page.$eval(".product-info h1", (name) => name.textContent);
   } catch {}
   try {
-    await page.waitForSelector(".price");
+    await page.waitForSelector(".price",{timeout:3000});
     Pricestring = await page.$eval(".price>span", (p) => p.textContent);
     curr = Pricestring.replace(/[0-9]|\s/g, "")
       .replace(".", "")
@@ -220,7 +222,7 @@ let inandoutfurniture = async (link) => {
   } catch {}
 
   try {
-    await page.waitForSelector(".img-screen img");
+    await page.waitForSelector(".img-screen img",{timeout:3000});
     ImgSrc = await page.$eval(".img-screen img", (img) =>
       img.getAttribute("src")
     );

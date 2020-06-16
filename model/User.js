@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     max: 255
   },
   lastname: {
-    required: true,
+    required: false,
     type: String,
     max: 255
   },
@@ -42,10 +42,6 @@ const userSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now()
-  },
-  facebookID: {
-    type: String,
-    required: false
   },
   googleID: {
     type: String,
