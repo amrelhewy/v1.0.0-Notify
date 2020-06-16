@@ -10,7 +10,7 @@ const cors = require("cors");
 const passport=require('passport')
 app.use(passport.initialize())
 app.use(passport.session())
-const PORT = process.env.PORT || 5000; //CHANGE PORT PLZ
+const PORT = process.env.PORT || 80; //CHANGE PORT PLZ
 let usercount = 0;
 let server = app.listen(PORT, () => {
   console.log(`Server Started on port 80...`);
@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
   socket.on("admin", (data) => {
     loggedInUsers.push({ socketid: socket.id, email: data.email });
     socket.emit("usercount", { usercount });
+    
     socket.on("messageAdmin", (ms) => {
       let chatter = loggedInUsers.find((user) => user.email == ms.email);
       if (chatter) {
@@ -53,6 +54,7 @@ io.on("connection", (socket) => {
     });
     socket.on("adminlogout", () => {
       
+      socket.removeListener('messageAdmin');
    
       loggedInUsers = loggedInUsers.filter((user) => user.socketid != socket.id);
     });
